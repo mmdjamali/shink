@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/template/html/v2"
 )
 
-func main() {
+func handler() {
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
