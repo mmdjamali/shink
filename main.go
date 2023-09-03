@@ -1,13 +1,23 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 )
 
-func handler() {
+func Handler(w http.ResponseWriter, r *http.Request) {
+	// This is needed to set the proper request path in `*fiber.Ctx`
+	r.RequestURI = r.URL.String()
+
+	handler().ServeHTTP(w, r)
+}
+
+func handler() http.HandlerFunc {
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
@@ -26,5 +36,5 @@ func handler() {
 		})
 	})
 
-	app.Listen(":3001")
+	return adaptor.FiberApp(app)
 }
