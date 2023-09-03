@@ -5,13 +5,11 @@ go 1.20
 require (
 	github.com/gofiber/fiber/v2 v2.49.1
 	github.com/gofiber/template/html/v2 v2.0.5
-	github.com/qinains/fastergoding v0.0.2
 	go.mongodb.org/mongo-driver v1.12.1
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/gofiber/template v1.8.2 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
