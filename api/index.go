@@ -18,7 +18,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handler() http.HandlerFunc {
-	engine := html.New("./views", ".html")
+	engine := html.New("../views", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views:       engine,
