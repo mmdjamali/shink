@@ -1,0 +1,68 @@
+<div class="" un-cloak>
+  <div class="w-full relative mx-auto max-w-[1300px]" un-cloak>
+    <div
+      class="flex flex-col p-8 relative w-full h-[calc(100vh_-_58px)]"
+      un-cloak
+    >
+      <form
+        method="POST"
+        action="/api/v1/login"
+        class="flex flex-col rounded items-center w-[min(100%_,_400px)] p-4 m-auto"
+        un-cloak
+      >
+        <i
+          class="ri-links-line text-[50px] aspect-square flex items-center justify-center mb-4"
+        ></i>
+        <h1 class="text-foreground text-[24px] font-semibold text-center mb-1">
+          Welcome to Shink!
+        </h1>
+
+        <p class="text-foreground/75 text-[14px] mb-6 text-center">
+          Please login/register with your email to continue.
+        </p>
+
+        <div
+          class="w-full relative flex items-center justify-center rounded-[6px] py-2 px-4 border border-foreground:10 hover:border-foreground:50 focus-within:border-foreground:50 focus-within:shadow focus-within:shadow-foregorund transition-all"
+        >
+          <input
+            name="email"
+            placeholder="example@mmd.com"
+            class="w-full flex-shrink outline-none"
+          />
+        </div>
+
+        <button
+          un-cloak
+          class="flex items-center font-medium mt-4 w-full transition-colors text-background hover:text-foregorund justify-center py-2 px-4 bg-foreground hover:bg-foreground:90 rounded-[6px] border border-foreground hover:border-foreground:90"
+        >
+          Submit
+        </button>
+
+        <div class="flex relative items-center gap-2 w-full mt-4">
+          <span class="flex bg-border w-full h-[1px]"></span>
+          <p class="text-12px text-border flex-shrink-0">OR CONTINUE WITH</p>
+          <span class="flex bg-border w-full h-[1px]"></span>
+        </div>
+
+        <div class="flex w-full gap-2 mt-4">
+          <button
+            class="flex items-center font-medium w-full transition-colors text-foregorund justify-center py-2 px-4 bg-transparent hover:bg-foreground:10 rounded-[6px] border border-foreground:10"
+            type="button"
+          >
+            <i
+              class="ri-discord-fill gap-1 text-[21px] h-21px aspect-square"
+            ></i>
+            <p class="leading-none font-medium">Discord</p>
+          </button>
+          <button
+            class="flex items-center gap-1 font-medium w-full transition-colors text-foregorund justify-center py-2 px-4 bg-transparent hover:bg-foreground:10 rounded-[6px] border border-foreground:10"
+            type="button"
+          >
+            <i class="ri-github-fill text-[21px] h-21px aspect-square"></i>
+            <p class="leading-none font-medium">Github</p>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
