@@ -75,10 +75,14 @@
           e.target.value = val;
           if (idx < 5 && val) ++activeIndex.val;
         },
-        onkeyup: (e) => {
+        onkeydown: (e) => {
+          if (digits[idx].val) return;
+
           const key = e.key;
-          if (key === "Backspace" && !digits[idx].val && idx > 0)
+          if (key === "Backspace" && idx > 0) {
             --activeIndex.val;
+            e.preventDefault();
+          }
         },
         onfocus: () => {
           if (activeIndex.val === idx) return;
@@ -96,7 +100,4 @@
     const el = document.querySelector("#digits");
     if (el) el.value = digits.map((digit) => digit.val).join("");
   });
-
-  console.log(document.querySelector("#email"));
-  console.log();
 </script>
