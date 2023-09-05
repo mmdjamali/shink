@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"start/database"
 	"start/models"
-	"start/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Credentials struct {
@@ -31,17 +30,15 @@ func LoginController(c *fiber.Ctx) error {
 		})
 	}
 
-	db := utils.ConnectDB().Database("test-go")
-
-	users := db.Collection("users")
-	otps := db.Collection("otps")
+	users := database.DB.Collection("users")
+	otps := database.DB.Collection("otps")
 
 	filter := bson.M{"email": credential.Email}
 
 	result := users.FindOne(context.TODO(), filter)
 
 	if result.Err() != nil {
-		user, user_err := users.InsertOne(context.TODO(), bson.M{
+		_, user_err := users.InsertOne(context.TODO(), bson.M{
 			"email":      credential.Email,
 			"created_at": time.Now(),
 		})
@@ -52,14 +49,11 @@ func LoginController(c *fiber.Ctx) error {
 
 		new_otp := fmt.Sprint(444444)
 
-		fmt.Println(user.InsertedID.(primitive.ObjectID))
-
 		_, otp_err := otps.InsertOne(context.TODO(), models.Otp{
-			Email:  credential.Email,
-			Digits: new_otp,
+			Email:     credential.Email,
+			Digits:    new_otp,
+			CreatedAt: time.Now(),
 		})
-
-		// fmt.Printf(otp.InsertedID.(string))
 
 		if otp_err != nil {
 			return otp_err
