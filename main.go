@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"start/controllers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -46,38 +47,9 @@ func main() {
 
 	v1 := api.Group("/v1")
 
-	v1.Post("/login", func(c *fiber.Ctx) error {
-		var payload struct {
-			Email string `json:"email"`
-		}
+	v1.Post("/login", controllers.LoginController)
 
-		if err := c.BodyParser(&payload); err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"success": false,
-				"data":    nil,
-			})
-		}
-
-		return c.Redirect(fmt.Sprintf("/confirm?email=%s", payload.Email))
-	})
-
-	v1.Post("/confirm", func(c *fiber.Ctx) error {
-		var payload struct {
-			Digits string `json:"digits"`
-			Email  string `json:"email"`
-		}
-
-		if err := c.BodyParser(&payload); err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"success": false,
-				"data":    nil,
-			})
-		}
-
-		fmt.Println(payload)
-
-		return c.Redirect("/")
-	})
+	v1.Post("/confirm", controllers.ValidateOtp)
 
 	app.Listen(":3001")
 }
