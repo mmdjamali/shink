@@ -1,67 +1,64 @@
 package controllers
 
 import (
-	"context"
-	"start/database"
-	"start/models"
+	"start/services"
 	"start/sessions"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func ValidateOtp(c *fiber.Ctx) error {
-	credentials := struct {
+	body := struct {
 		Email  string `json:"email" bson:"email"`
 		Digits string `json:"digits" bson:"digits"`
 	}{}
 
-	// ctx, ctx_err := context.WithTimeout(context.TODO(), 10*time.Second)
-
-	// if ctx_err != nil {
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	// 		"success": false,
-	// 		"message": "context error",
-	// 	})
-	// }
-
-	if err := c.BodyParser(&credentials); err != nil {
+	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": err.Error(),
 		})
 	}
 
-	otps := database.DB.Collection("otps")
+	userS := &services.UserService{Email: body.Email}
+	otpS := &services.OtpService{Email: body.Email}
 
-	otp := new(models.Otp)
+	exists, exists_err := userS.Exists()
 
-	if err := otps.FindOne(context.TODO(), fiber.Map{}).Decode(&otp); err != nil {
-		return err
+	if exists_err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "something went wrong!",
+		})
 	}
 
-	if otp.Digits != credentials.Digits {
+	if !exists {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"success": false,
+			"message": "something went wrong!",
+		})
+	}
+
+	valid, valid_err := otpS.Validate(body.Digits)
+
+	if valid_err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
 		})
 	}
 
-	var user models.User
-	res := database.DB.Collection("users").FindOne(context.TODO(), bson.M{
-		"email": credentials.Email,
-	})
-
-	if res.Err() != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	if !valid {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"success": false,
-			"message": res.Err().Error(),
 		})
 	}
 
-	if d_err := res.Decode(&user); d_err != nil {
+	user, user_err := userS.Get()
+
+	if user_err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
-			"message": d_err.Error(),
+			"message": user_err.Error(),
 		})
 	}
 
