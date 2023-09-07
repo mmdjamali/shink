@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"start/config"
 	"start/controllers"
 	"start/database"
@@ -50,10 +49,9 @@ func main() {
 		uid := sess.Get("uid")
 		defer sess.Save()
 
-		fmt.Println(uid)
-
 		return c.Render("main", fiber.Map{
 			"Title": "Shink - Free Link shortener",
+			"UID" : uid,
 		})
 	})
 
@@ -64,7 +62,6 @@ func main() {
 	})
 
 	app.Get("/confirm", func(c *fiber.Ctx) error {
-		fmt.Println(c.Query("email"))
 		return c.Render("pages/confirm-email", fiber.Map{
 			"Title": "Shink - Authentication",
 			"Email": c.Query("email"),

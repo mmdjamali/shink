@@ -10,55 +10,47 @@
       ></i>
       <p class="text-[16px] font-semibold">Shink</p>
     </a>
-    <a href="/auth">
-      <button
-        class="flex items-center transition-colors text-foregorund:90 hover:text-foregorund justify-center py-2 px-2 hover:bg-foreground:10 rounded-[6px]"
-      >
-        <i
-          class="ri-login-box-line flex items-center justify-center text-21px h-21px aspect-square"
-        ></i>
-      </button>
-    </a>
+    <div id="auth-container"></div>
   </header>
 </div>
 
-<!-- <script>
-  const { div, header, button, a, i, p } = van.tags;
+<script>
+  const { a, button, i } = van.tags;
+  const uid = "{{ .UID }}";
+  const authContainer = document.querySelector("#auth-container");
 
-  const Header = () => {
-    return div(
-      { class: "relative border-b border-border" },
-      header(
-        {
-          class:
-            "flex items-center justify-between max-w-[1300px] mx-auto px-4 md:px-8 font-[Inter] h-47px",
-        },
-        div(
-          { class: "flex items-center justify-center gap-2" },
+  if (!uid) {
+    const Button = () => {
+      return a(
+        { href: "/auth" },
+        button(
+          {
+            class:
+              "flex items-center transition-colors text-foregorund:90 hover:text-foregorund justify-center py-2 px-2 hover:bg-foreground:10 rounded-[6px]",
+          },
           i({
             class:
-              "ri-link flex items-center justify-center text-21px h-21px aspect-square",
-          }),
-          p({ class: "text-[16px] font-semibold" }, "Shink")
-        ),
-        a(
-          { href: "/auth" },
-          button(
-            {
-              class:
-                "flex items-center text-foregorund justify-center py-2 px-2 hover:bg-foreground:10 rounded-[6px]",
-            },
-            i({
-              class:
-                "ri-login-box-line flex items-center justify-center text-21px h-21px aspect-square",
-            })
-          )
+              "ri-login-box-line flex items-center justify-center text-21px h-21px aspect-square",
+          })
         )
-      )
-    );
-  };
-
-  van.add(document.body, Header());
-</script> -->
+      );
+    };
+    van.add(authContainer, Button());
+  } else {
+    const Button = () => {
+      return button(
+        {
+          class:
+            "flex items-center transition-colors text-foregorund:90 hover:text-foregorund justify-center py-2 px-2 hover:bg-foreground:10 rounded-[6px]",
+        },
+        i({
+          class:
+            "ri-user-line flex items-center justify-center text-21px h-21px aspect-square",
+        })
+      );
+    };
+    van.add(authContainer, Button());
+  }
+</script>
 
 {{end}}
