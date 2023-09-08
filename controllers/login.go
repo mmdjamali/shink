@@ -44,6 +44,7 @@ func LoginController(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"data":    nil,
+			"message": "something went wrong while checking user does exists",
 		})
 	}
 
@@ -73,6 +74,7 @@ func LoginController(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"data":    nil,
+			"message": "something went wrong while getting user",
 		})
 	}
 

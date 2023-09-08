@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"start/database"
 	"start/models"
 	"time"
@@ -54,10 +55,12 @@ func (userS *UserService) Get() (*models.User, error) {
 	})
 
 	if res.Err() != nil {
+		fmt.Println(res.Err().Error())
 		return nil, res.Err()
 	}
 
-	if err := res.Decode(user); err != nil {
+	if err := res.Decode(&user); err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 

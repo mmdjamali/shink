@@ -3,8 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
+	"start/config"
 	"start/database"
 	"start/models"
+	"start/utils"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,12 +17,6 @@ import (
 type OtpService struct {
 	Email string `json:"email" bson:"email"`
 }
-
-// func (otpS OtpService) New(e string) *OtpService {
-// 	return &OtpService{
-// 		Email: e,
-// 	}
-// }
 
 func (otpS *OtpService) Exists() (bool, error) {
 	otpCollection := database.DB.Collection("otps")
@@ -57,13 +53,35 @@ func (otpS *OtpService) Create() (string, error) {
 func (otpS *OtpService) Update() (string, error) {
 	otpCollection := database.DB.Collection("otps")
 
+	otp, otp_err := otpS.Get()
+
+	if otp_err != nil {
+		return "", otp_err
+	}
+
+	can, can_err := otpS.CanCreateNew(otp)
+
+	if can_err != nil {
+		return "", can_err
+	}
+
+	if !can {
+		if err := otpS.ResetAttempts(otp); err != nil {
+			return "", err
+		}
+	}
+
 	_, err := otpCollection.UpdateOne(
 		context.TODO(),
 		fiber.Map{
 			"email": otpS.Email,
 		}, bson.M{
 			"$set": bson.M{
-				"digits": "444444",
+				"updated_digits_at": time.Now(),
+				"digits":            "444444",
+			},
+			"$inc": bson.M{
+				"attempt_count": 1,
 			},
 		})
 
@@ -77,26 +95,20 @@ func (otpS *OtpService) Update() (string, error) {
 }
 
 func (otpS *OtpService) Validate(d string) (bool, error) {
-	otpCollection := database.DB.Collection("otps")
+	otp, err := otpS.Get()
 
-	otp := models.Otp{}
-
-	res := otpCollection.FindOne(context.TODO(), fiber.Map{
-		"email": otpS.Email,
-	})
-
-	if res.Err() != nil {
-		return false, res.Err()
+	if time.Now().After(otp.UpdatedDigitsAt.Add(config.OtpLifeTime)) {
+		return false, &utils.CustomError{Message: "otp has been expired"}
 	}
 
-	if err := res.Decode(&otp); err != nil {
-
+	if err != nil {
+		return false, err
 	}
 
 	return d == otp.Digits, nil
 }
 
-func (otpS *OtpService) Get(d string) (bool, error) {
+func (otpS *OtpService) Get() (*models.Otp, error) {
 	otpCollection := database.DB.Collection("otps")
 
 	otp := models.Otp{}
@@ -106,12 +118,41 @@ func (otpS *OtpService) Get(d string) (bool, error) {
 	})
 
 	if res.Err() != nil {
-		return false, res.Err()
+		return nil, res.Err()
 	}
 
 	if err := res.Decode(&otp); err != nil {
 
 	}
 
-	return d == otp.Digits, nil
+	return &otp, nil
+}
+
+func (otpS *OtpService) CanCreateNew(otp *models.Otp) (bool, error) {
+	if otp.AttemptCount < 15 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (otpS *OtpService) ResetAttempts(otp *models.Otp) error {
+	otpCollection := database.DB.Collection("otps")
+
+	if !time.Now().After(otp.UpdatedAttemptCountAt.Add(time.Hour * 24)) {
+		return &utils.CustomError{Message: "request limit for otp"}
+	}
+
+	_, err := otpCollection.UpdateOne(context.TODO(), bson.M{
+		"_id": otp.ID.Hex(),
+	}, models.Otp{
+		AttemptCount:          0,
+		UpdatedAttemptCountAt: time.Now(),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
