@@ -80,5 +80,5 @@ func ValidateOtp(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Redirect("/")
+	return c.Redirect("/home")
 }

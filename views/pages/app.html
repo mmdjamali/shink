@@ -1,8 +1,8 @@
 <div class="overflow-y-scroll" un-cloak>
   {{template "header" .}}
 
-  <div class="w-full relative mx-auto max-w-[1300px]">
-    <div class="flex flex-col p-8 relative w-full h-[calc(100vh_-_58px)]">
+  <div class="w-full relative mx-auto max-w-[1300px] px-4 md:px-8">
+    <div class="flex flex-col relative w-full h-[calc(100vh_-_58px)]">
       <div class="flex flex-col w-full relative py-24 my-auto gap-6">
         <h1
           class="text-3xl md:text-5xl lg:text-6xl leading-[1] text-center font-bold text-foregorund"
@@ -16,33 +16,35 @@
         </p>
 
         <div class="flex flex-col">
-          <form class="flex flex-col mx-auto items-center w-3xl gap-2 relative">
+          <form
+            class="flex flex-col mx-auto items-center w-[min(768px_,_100%)] gap-2 relative"
+            method="post"
+            action="/api/v1/links"
+          >
             <div
-              class="flex h-48px mx-auto items-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+              class="hover:border-foreground:50 focus-within:border-foreground:50 focus-within:shadow focus-within:shadow-foregorund flex h-48px mx-auto items-center justify-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
             >
-              <i
-                class="ri-link ml-3 text-21px h-21px aspect-square flex-shrink-0"
-              ></i>
+              <i class="ri-link ml-3 text-21px flex-shrink-0"></i>
 
               <input
                 required
-                name="url"
+                name="link"
                 class="w-full outline-none"
                 placeholder="Enter your link..."
               />
             </div>
 
             <div
-              class="flex mx-auto items-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+              class="hover:border-primary:50 focus-within:border-primary:50 focus-within:shadow focus-within:shadow-primary/50 flex mx-auto items-center justify-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
             >
               <i
-                class="ri-links-line ml-3 text-21px h-21px aspect-square flex-shrink-0"
+                class="ri-links-line text-primary ml-3 text-21px flex-shrink-0"
               ></i>
 
               <input
                 required
                 name="custom"
-                class="w-full outline-none"
+                class="w-full caret-primary outline-none"
                 placeholder="Enter your custom link..."
               />
 

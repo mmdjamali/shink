@@ -11,6 +11,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -38,9 +39,13 @@ func (otpS *OtpService) Create() (string, error) {
 	otpCollection := database.DB.Collection("otps")
 
 	_, err := otpCollection.InsertOne(context.TODO(), models.Otp{
-		Email:     otpS.Email,
-		Digits:    "444444",
-		CreatedAt: time.Now(),
+		ID:                    primitive.NewObjectID(),
+		Email:                 otpS.Email,
+		Digits:                "444444",
+		CreatedAt:             time.Now(),
+		UpdatedAttemptCountAt: time.Now(),
+		AttemptCount:          1,
+		UpdatedDigitsAt:       time.Now(),
 	})
 
 	if err != nil {
@@ -133,6 +138,8 @@ func (otpS *OtpService) CanCreateNew(otp *models.Otp) (bool, error) {
 		return true, nil
 	}
 
+	fmt.Println("can't")
+
 	return false, nil
 }
 
@@ -144,10 +151,12 @@ func (otpS *OtpService) ResetAttempts(otp *models.Otp) error {
 	}
 
 	_, err := otpCollection.UpdateOne(context.TODO(), bson.M{
-		"_id": otp.ID.Hex(),
-	}, models.Otp{
-		AttemptCount:          0,
-		UpdatedAttemptCountAt: time.Now(),
+		"_id": otp.ID,
+	}, bson.M{
+		"$set": bson.M{
+			"attempt_count":            0,
+			"updated_attempt_count_at": time.Now(),
+		},
 	})
 
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -34,7 +35,10 @@ func (userS *UserService) Exists() (bool, error) {
 func (userS *UserService) Create() (string, error) {
 	usersCollection := database.DB.Collection("users")
 
-	res, err := usersCollection.InsertOne(context.TODO(), models.User{
+	id := primitive.NewObjectID()
+
+	_, err := usersCollection.InsertOne(context.TODO(), models.User{
+		ID:        id,
 		Email:     userS.Email,
 		CreatedAt: time.Now(),
 	})
@@ -43,7 +47,7 @@ func (userS *UserService) Create() (string, error) {
 		return "", err
 	}
 
-	return res.InsertedID.(string), nil
+	return id.Hex(), nil
 }
 
 func (userS *UserService) Get() (*models.User, error) {

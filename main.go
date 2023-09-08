@@ -4,7 +4,9 @@ import (
 	"start/config"
 	"start/controllers"
 	"start/database"
+	"start/services"
 	"start/sessions"
+	"start/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -36,7 +38,7 @@ func main() {
 
 	app.Static("/public", "./public")
 
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.Get("/home", func(c *fiber.Ctx) error {
 		sess, sess_err := sessions.SessionStore.Get(c)
 
 		if sess_err != nil {
@@ -68,6 +70,10 @@ func main() {
 		uid := sess.Get("uid")
 		defer sess.Save()
 
+		if uid == nil {
+			return c.Redirect("/auth")
+		}
+
 		return c.Render("pages/app", fiber.Map{
 			"Title": "Shink - Free Link shortener",
 			"UID":   uid,
@@ -94,6 +100,91 @@ func main() {
 	v1.Post("/login", controllers.LoginController)
 
 	v1.Post("/confirm", controllers.ValidateOtp)
+
+	links := v1.Group("/links")
+
+	links.Post("/", func(c *fiber.Ctx) error {
+		body := &struct {
+			Link   string `json:"link" bson:"link"`
+			Custom string `json:"custom" bson:"custom"`
+		}{}
+
+		if err := c.BodyParser(body); err != nil {
+			return err
+		}
+
+		if !utils.IsValidURL(body.Link) {
+			return c.Redirect("/")
+		}
+
+		sess, sess_err := sessions.SessionStore.Get(c)
+
+		if sess_err != nil {
+			c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "faild to get token",
+			})
+		}
+
+		uid := sess.Get("uid")
+
+		if uid == nil {
+			return c.Redirect("/")
+		}
+
+		defer sess.Save()
+
+		LS := &services.LinkService{
+			Custom: body.Custom,
+			Link:   body.Link,
+		}
+
+		exists, exists_err := LS.Exists()
+
+		if exists_err != nil {
+			return c.Redirect("/")
+		}
+
+		if exists {
+			return c.Redirect("/")
+		}
+
+		cr_err := LS.Create(uid.(string))
+
+		if cr_err != nil {
+			return c.Redirect("/")
+		}
+
+		return c.Redirect("/app")
+	})
+
+	app.Get("/:custom", func(c *fiber.Ctx) error {
+		custom := c.Params("custom")
+
+		if custom == "" {
+			return c.Redirect("/home")
+		}
+
+		LS := services.LinkService{
+			Custom: custom,
+		}
+
+		link, err := LS.Get()
+
+		if err != nil {
+			return c.Redirect("/home")
+		}
+
+		update_err := LS.UpdateRedirectCount()
+
+		if update_err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+			})
+		}
+
+		return c.Redirect(link.Link)
+	})
 
 	app.Listen(":3001")
 }
