@@ -158,33 +158,11 @@ func main() {
 		return c.Redirect("/app")
 	})
 
-	app.Get("/:custom", func(c *fiber.Ctx) error {
-		custom := c.Params("custom")
-
-		if custom == "" {
-			return c.Redirect("/home")
-		}
-
-		LS := services.LinkService{
-			Custom: custom,
-		}
-
-		link, err := LS.Get()
-
-		if err != nil {
-			return c.Redirect("/home")
-		}
-
-		update_err := LS.UpdateRedirectCount()
-
-		if update_err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"success": false,
-			})
-		}
-
-		return c.Redirect(link.Link)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect("/home")
 	})
+
+	app.Get("/:custom", controllers.RedirectController)
 
 	app.Listen(":3001")
 }
