@@ -51,7 +51,26 @@ func main() {
 
 		return c.Render("main", fiber.Map{
 			"Title": "Shink - Free Link shortener",
-			"UID" : uid,
+			"UID":   uid,
+		})
+	})
+
+	app.Get("/app", func(c *fiber.Ctx) error {
+		sess, sess_err := sessions.SessionStore.Get(c)
+
+		if sess_err != nil {
+			c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "faild to get token",
+			})
+		}
+
+		uid := sess.Get("uid")
+		defer sess.Save()
+
+		return c.Render("pages/app", fiber.Map{
+			"Title": "Shink - Free Link shortener",
+			"UID":   uid,
 		})
 	})
 

@@ -1,0 +1,64 @@
+<div class="overflow-y-scroll" un-cloak>
+  {{template "header" .}}
+
+  <div class="w-full relative mx-auto max-w-[1300px]">
+    <div class="flex flex-col p-8 relative w-full h-[calc(100vh_-_58px)]">
+      <div class="flex flex-col w-full relative py-24 my-auto gap-6">
+        <h1
+          class="text-3xl md:text-5xl lg:text-6xl leading-[1] text-center font-bold text-foregorund"
+        >
+          A link shortener application built with every cool thing you can
+          imagine
+        </h1>
+
+        <p class="text-foreground:75 text-center text-lg sm:text-xl">
+          Make your hard to remember links short and share them with the world!
+        </p>
+
+        <div class="flex flex-col">
+          <form class="flex flex-col mx-auto items-center w-3xl gap-2 relative">
+            <div
+              class="flex h-48px mx-auto items-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+            >
+              <i
+                class="ri-link ml-3 text-21px h-21px aspect-square flex-shrink-0"
+              ></i>
+
+              <input
+                required
+                name="url"
+                class="w-full outline-none"
+                placeholder="Enter your link..."
+              />
+            </div>
+
+            <div
+              class="flex mx-auto items-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+            >
+              <i
+                class="ri-links-line ml-3 text-21px h-21px aspect-square flex-shrink-0"
+              ></i>
+
+              <input
+                required
+                name="custom"
+                class="w-full outline-none"
+                placeholder="Enter your custom link..."
+              />
+
+              <button
+                class="flex flex-shrink-0 items-center font-medium transition-colors text-background hover:text-foregorund justify-center py-2 px-4 bg-foreground hover:bg-foreground:90 rounded-[6px] border border-foreground hover:border-foreground:90"
+              >
+                Shink it!
+              </button>
+            </div>
+          </form>
+
+          {{ if .Error }}
+          <p class="text-error mx-auto max-w-2xl mt-1">Something went wrong!</p>
+          {{end}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
