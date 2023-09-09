@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"start/config"
 	"start/controllers"
 	"start/database"
@@ -74,9 +75,23 @@ func main() {
 			return c.Redirect("/auth")
 		}
 
+		LS := services.LinkService{}
+
+		links, err := LS.GetLinksOfUser(uid.(string))
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return c.Render("pages/app", fiber.Map{
+				"Title": "Shink - Free Link shortener",
+				"UID":   uid,
+			})
+		}
+
 		return c.Render("pages/app", fiber.Map{
 			"Title": "Shink - Free Link shortener",
 			"UID":   uid,
+			"Links": links,
+			"URL":   "sh.mmdjamali.ir",
 		})
 	})
 
@@ -115,6 +130,13 @@ func main() {
 
 		if !utils.IsValidURL(body.Link) {
 			return c.Redirect("/")
+		}
+
+		if !utils.IsDomainDiffrent(body.Link) {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"success": false,
+				"message": "aren't you so smart? :)",
+			})
 		}
 
 		sess, sess_err := sessions.SessionStore.Get(c)
@@ -163,6 +185,10 @@ func main() {
 	})
 
 	app.Get("/:custom", controllers.RedirectController)
+
+	app.Use("/", func(c *fiber.Ctx) error {
+		return c.SendStatus(404)
+	})
 
 	app.Listen(":3001")
 }
