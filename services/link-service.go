@@ -95,3 +95,30 @@ func (ls *LinkService) UpdateRedirectCount() error {
 
 	return nil
 }
+
+func (ls *LinkService) GetLinksOfUser(_id string) (*[]models.Link, error) {
+	linkCollection := database.DB.Collection("links")
+
+	owner_id, err := primitive.ObjectIDFromHex(_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var links []models.Link
+
+	res, err := linkCollection.Find(context.TODO(), bson.M{
+		"owner": owner_id,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := res.All(context.TODO(), &links); err != nil {
+		return nil, err
+	}
+
+	return &links, err
+
+}
