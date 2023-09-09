@@ -1,11 +1,11 @@
-<div class="overflow-y-scroll" un-cloak>
+<div class="" un-cloak>
   {{template "header" .}}
 
-  <div class="w-full relative mx-auto max-w-[1300px] px-4 md:px-8">
-    <div class="flex flex-col relative w-full h-[calc(100vh_-_58px)]">
-      <div class="flex flex-col w-full relative py-24 my-auto gap-6">
+  <div class="relative mx-auto w-full max-w-[1300px] gap-8 px-4 pb-8 md:px-8">
+    <div class="relative flex w-full flex-col">
+      <div class="relative my-auto flex w-full flex-col gap-6 py-24">
         <h1
-          class="text-3xl md:text-5xl lg:text-6xl leading-[1] text-center font-bold text-foregorund"
+          class="text-foregorund text-center text-3xl font-bold leading-[1] md:text-5xl lg:text-6xl"
         >
           A link shortener application built with every cool thing you can
           imagine
@@ -17,14 +17,14 @@
 
         <div class="flex flex-col">
           <form
-            class="flex flex-col mx-auto items-center w-[min(768px_,_100%)] gap-2 relative"
+            class="relative mx-auto flex w-[min(768px_,_100%)] flex-col items-center gap-2"
             method="post"
             action="/api/v1/links"
           >
             <div
-              class="hover:border-foreground:50 focus-within:border-foreground:50 focus-within:shadow focus-within:shadow-foregorund flex h-48px mx-auto items-center justify-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+              class="hover:border-foreground:50 focus-within:border-foreground:50 focus-within:shadow-foregorund h-48px border-foreground/10 relative mx-auto flex w-full items-center justify-center gap-2 rounded-[8px] border p-1 focus-within:shadow"
             >
-              <i class="ri-link ml-3 text-21px flex-shrink-0"></i>
+              <i class="ri-link text-21px ml-3 flex-shrink-0"></i>
 
               <input
                 required
@@ -35,21 +35,21 @@
             </div>
 
             <div
-              class="hover:border-primary:50 focus-within:border-primary:50 focus-within:shadow focus-within:shadow-primary/50 flex mx-auto items-center justify-center w-full rounded-[8px] gap-2 relative p-1 border border-foreground/10"
+              class="hover:border-primary:50 focus-within:border-primary:50 focus-within:shadow-primary/50 border-foreground/10 relative mx-auto flex w-full items-center justify-center gap-2 rounded-[8px] border p-1 focus-within:shadow"
             >
               <i
-                class="ri-links-line text-primary ml-3 text-21px flex-shrink-0"
+                class="ri-links-line text-primary text-21px ml-3 flex-shrink-0"
               ></i>
 
               <input
                 required
                 name="custom"
-                class="w-full caret-primary outline-none"
+                class="caret-primary w-full outline-none"
                 placeholder="Enter your custom link..."
               />
 
               <button
-                class="flex flex-shrink-0 items-center font-medium transition-colors text-background justify-center py-2 px-4 bg-foreground hover:bg-primary rounded-[6px] border border-foreground hover:border-primary"
+                class="text-background bg-foreground hover:bg-primary border-foreground hover:border-primary flex flex-shrink-0 items-center justify-center rounded-[6px] border px-4 py-2 font-medium transition-colors"
               >
                 Shink it!
               </button>
@@ -57,10 +57,47 @@
           </form>
 
           {{ if .Error }}
-          <p class="text-error mx-auto max-w-2xl mt-1">Something went wrong!</p>
+          <p class="text-error mx-auto mt-1 max-w-2xl">Something went wrong!</p>
           {{end}}
         </div>
       </div>
     </div>
+    {{ if .Links }}
+    <div class="mx-auto flex w-[min(768px_,_100%)] flex-col gap-2">
+      <h2 class="text-2xl font-semibold">Links</h2>
+      <div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+        {{range .Links}}
+        <div
+          class="border-border gap relative flex w-full flex-col gap-2 rounded-[8px] border p-4"
+        >
+          <div class="flex items-center justify-between">
+            <a
+              href="/{{ .Custom }}"
+              class="overflow-hidden text-ellipsis whitespace-nowrap"
+            >
+              <!-- <span class="url"></span
+          > -->
+              <span class="text-primary">{{ .Custom }}</span>
+            </a>
+            <i class="ri-link text-foreground text-21px flex-shrink-0"></i>
+          </div>
+          <a
+            href="{{ .Link }}"
+            class="hover:text-primary overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+          >
+            {{ .Link }}
+          </a>
+        </div>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
   </div>
 </div>
+
+<script>
+  const url = "{{ .URL }}";
+  document.querySelectorAll(".url")?.forEach((e) => {
+    van.add(e, url + "/");
+  });
+</script>

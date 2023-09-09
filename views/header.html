@@ -1,12 +1,12 @@
 {{define "header"}}
 
-<div class="relative border-b border-border sticky top-0">
+<div class="bg-background border-border sticky top-0 z-[50] border-b">
   <header
-    class="flex items-center justify-between max-w-[1300px] mx-auto px-4 md:px-8 font-[Inter] h-57px"
+    class="h-57px mx-auto flex max-w-[1300px] items-center justify-between px-4 font-[Inter] md:px-8"
   >
     <a href="/home" class="flex items-center justify-center gap-2">
       <i
-        class="ri-links-line flex items-center justify-center text-24px h-21px aspect-square"
+        class="ri-links-line text-24px h-21px flex aspect-square items-center justify-center"
       ></i>
       <p class="text-[16px] font-semibold">Shink</p>
     </a>
@@ -31,8 +31,8 @@
           i({
             class:
               "ri-login-box-line flex items-center justify-center text-21px h-21px aspect-square",
-          })
-        )
+          }),
+        ),
       );
     };
     van.add(authContainer, Button());
@@ -46,7 +46,7 @@
         i({
           class:
             "ri-user-line flex items-center justify-center text-21px h-21px aspect-square",
-        })
+        }),
       );
     };
     van.add(authContainer, Button());
